@@ -1,9 +1,8 @@
 import { api } from '../api';
 
 const OPINION_META = {
-  Buy:  { label: 'Buy', bg: '#fff0f0', color: '#c0392b', border: '#f5c6c6' },
-  Hold: { label: 'Hold', bg: '#fafafa', color: '#7f8c8d', border: '#dde1e7' },
-  Sell: { label: 'Sell', bg: '#f0f4ff', color: '#2980b9', border: '#b6c9f0' },
+  '긍정적 의견': { label: '▲ 긍정적 의견', bg: '#fff0f0', color: '#c0392b', border: '#f5c6c6' },
+  '부정적 의견': { label: '▼ 부정적 의견', bg: '#f0f4ff', color: '#2980b9', border: '#b6c9f0' },
 };
 
 export default function OpinionList({ opinions, loading, onDeleted }) {
@@ -24,18 +23,11 @@ export default function OpinionList({ opinions, loading, onDeleted }) {
     <div>
       <h2 style={styles.title}>IR 의견 목록 ({opinions.length}건)</h2>
       {opinions.map((op) => {
-        const meta = OPINION_META[op.opinion_type] || OPINION_META.Hold;
-        const upside = op.target_price && op.current_price
-          ? (((op.target_price - op.current_price) / op.current_price) * 100).toFixed(1)
-          : null;
-
+        const meta = OPINION_META[op.opinion_type] || OPINION_META['긍정적 의견'];
         return (
           <div key={op.id} style={{ ...styles.card, borderLeft: `4px solid ${meta.border}` }}>
             <div style={styles.header}>
-              <div style={styles.company}>
-                <span style={styles.name}>{op.company_name}</span>
-                <span style={styles.code}>{op.stock_code}</span>
-              </div>
+              <span style={styles.name}>{op.company_name}</span>
               <div style={styles.right}>
                 <span style={{ ...styles.badge, background: meta.bg, color: meta.color, border: `1px solid ${meta.border}` }}>
                   {meta.label}
@@ -44,20 +36,10 @@ export default function OpinionList({ opinions, loading, onDeleted }) {
               </div>
             </div>
 
-            <div style={styles.prices}>
-              {op.current_price && <span>현재 <b>{op.current_price.toLocaleString()}원</b></span>}
-              {op.target_price && <span>목표 <b>{op.target_price.toLocaleString()}원</b></span>}
-              {upside !== null && (
-                <span style={{ color: Number(upside) >= 0 ? '#c0392b' : '#2980b9', fontWeight: 700 }}>
-                  ({Number(upside) >= 0 ? '+' : ''}{upside}%)
-                </span>
-              )}
-            </div>
-
             <p style={styles.content}>{op.content}</p>
 
             <div style={styles.footer}>
-              {op.analyst && <span>· {op.analyst}</span>}
+              {op.analyst && <span>심사역: {op.analyst}</span>}
               <span>{formatDate(op.created_at)}</span>
             </div>
           </div>
@@ -83,14 +65,11 @@ const styles = {
     marginBottom: 16,
     boxShadow: '0 1px 6px rgba(0,0,0,0.06)',
   },
-  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
-  company: { display: 'flex', alignItems: 'center', gap: 10 },
+  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
   name: { fontSize: 17, fontWeight: 700 },
-  code: { fontSize: 13, color: '#888', background: '#f0f2f5', padding: '2px 8px', borderRadius: 6 },
   right: { display: 'flex', alignItems: 'center', gap: 8 },
-  badge: { padding: '3px 12px', borderRadius: 20, fontSize: 13, fontWeight: 700 },
-  del: { background: 'none', border: 'none', color: '#ccc', fontSize: 16, padding: '2px 6px', transition: 'color .2s' },
-  prices: { display: 'flex', gap: 16, fontSize: 14, color: '#555', marginBottom: 12 },
-  content: { fontSize: 14, lineHeight: 1.7, color: '#333', whiteSpace: 'pre-wrap' },
-  footer: { display: 'flex', gap: 12, marginTop: 12, fontSize: 12, color: '#aaa' },
+  badge: { padding: '4px 14px', borderRadius: 20, fontSize: 13, fontWeight: 700 },
+  del: { background: 'none', border: 'none', color: '#ccc', fontSize: 16, padding: '2px 6px', cursor: 'pointer' },
+  content: { fontSize: 14, lineHeight: 1.8, color: '#333', whiteSpace: 'pre-wrap', marginBottom: 12 },
+  footer: { display: 'flex', gap: 16, fontSize: 12, color: '#aaa' },
 };

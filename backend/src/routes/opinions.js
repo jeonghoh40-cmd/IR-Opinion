@@ -27,26 +27,18 @@ router.get('/:id', async (req, res) => {
 
 // 등록
 router.post('/', async (req, res) => {
-  const { company_name, stock_code, opinion_type, target_price, current_price, analyst, content } = req.body;
+  const { company_name, opinion_type, analyst, content } = req.body;
 
-  if (!company_name || !stock_code || !opinion_type || !content) {
-    return res.status(400).json({ success: false, message: '필수 항목 누락 (회사명, 종목코드, 투자의견, 내용)' });
+  if (!company_name || !opinion_type || !content) {
+    return res.status(400).json({ success: false, message: '필수 항목 누락 (회사명, 투자의견, 내용)' });
   }
-  if (!['Buy', 'Hold', 'Sell'].includes(opinion_type)) {
-    return res.status(400).json({ success: false, message: '투자의견은 Buy / Hold / Sell 중 하나여야 합니다.' });
+  if (!['긍정적 의견', '부정적 의견'].includes(opinion_type)) {
+    return res.status(400).json({ success: false, message: '투자의견은 긍정적 의견 또는 부정적 의견이어야 합니다.' });
   }
 
   const { data, error } = await supabase
     .from('opinions')
-    .insert([{
-      company_name,
-      stock_code,
-      opinion_type,
-      target_price: target_price ? Number(target_price) : null,
-      current_price: current_price ? Number(current_price) : null,
-      analyst: analyst || null,
-      content,
-    }])
+    .insert([{ company_name, opinion_type, analyst: analyst || null, content }])
     .select()
     .single();
 

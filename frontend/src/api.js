@@ -18,4 +18,6 @@ export const api = {
   getOne: (id) => request(`/opinions/${id}`),
   create: (body) => request('/opinions', { method: 'POST', body: JSON.stringify(body) }),
   remove: (id) => request(`/opinions/${id}`, { method: 'DELETE' }),
+  getCompanies: () => request('/companies'),
+  getReviewers: () => request('/reviewers'),
 };

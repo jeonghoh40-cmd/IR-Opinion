@@ -29,6 +29,8 @@ app.get('/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().
 
 // API 라우트
 app.use('/api/opinions', require('./routes/opinions'));
+app.use('/api/companies', require('./routes/companies'));
+app.use('/api/reviewers', require('./routes/reviewers'));
 
 // 404
 app.use((req, res) => res.status(404).json({ success: false, message: '엔드포인트를 찾을 수 없습니다.' }));
