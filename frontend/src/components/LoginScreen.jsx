@@ -34,7 +34,7 @@ export default function LoginScreen({ onLogin }) {
           <span style={styles.logoText}>IR Opinion</span>
         </div>
 
-        <form onSubmit={submit} style={styles.form}>
+        <form onSubmit={submit} style={styles.form} autoComplete="off">
           <div style={styles.field}>
             <label style={styles.label}>심사역 선택</label>
             <select
@@ -58,6 +58,7 @@ export default function LoginScreen({ onLogin }) {
               onChange={(e) => setPassword(e.target.value)}
               required
               placeholder="암호를 입력하세요"
+              autoComplete="new-password"
               style={styles.input}
             />
           </div>
