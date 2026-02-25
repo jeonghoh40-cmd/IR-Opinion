@@ -14,6 +14,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState('list');
   const [showChangePw, setShowChangePw] = useState(false);
+  const [loginKey, setLoginKey] = useState(0);
 
   useEffect(() => {
     if (!reviewer) return;
@@ -34,6 +35,7 @@ export default function App() {
     setOpinions([]);
     setLoading(true);
     setTab('list');
+    setLoginKey((k) => k + 1);
   };
 
   const handleCreated = (op) => {
@@ -45,7 +47,7 @@ export default function App() {
     setOpinions((prev) => prev.filter((op) => op.id !== id));
   };
 
-  if (!reviewer) return <LoginScreen onLogin={handleLogin} />;
+  if (!reviewer) return <LoginScreen key={loginKey} onLogin={handleLogin} />;
 
   return (
     <div style={styles.root}>
