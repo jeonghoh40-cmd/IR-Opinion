@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const { initDb } = require('./db');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -9,12 +8,11 @@ const PORT = process.env.PORT || 3001;
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:4173',
-  process.env.FRONTEND_URL, // Railway 환경변수로 Vercel URL 지정
+  process.env.FRONTEND_URL,
 ].filter(Boolean);
 
 app.use(cors({
   origin: (origin, callback) => {
-    // 서버-투-서버(origin 없음) 또는 허용 목록
     if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
       callback(null, true);
     } else {
@@ -40,11 +38,6 @@ app.use((err, req, res, next) => {
   res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
 });
 
-initDb().then(() => {
-  app.listen(PORT, () => {
-    console.log(`IR Opinion API 서버 실행 중: http://localhost:${PORT}`);
-  });
-}).catch((err) => {
-  console.error('DB 초기화 실패:', err);
-  process.exit(1);
+app.listen(PORT, () => {
+  console.log(`IR Opinion API 서버 실행 중: http://localhost:${PORT}`);
 });

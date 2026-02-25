@@ -1,25 +1,13 @@
-const { Low } = require('lowdb');
-const { JSONFile } = require('lowdb/node');
-const path = require('path');
-const fs = require('fs');
+const { createClient } = require('@supabase/supabase-js');
 
-// Railway persistent disk: /app/data, 로컬: ./data
-const dataDir = process.env.DB_DIR || path.join(__dirname, '..', 'data');
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
 
-if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
+if (!supabaseUrl || !supabaseKey) {
+  console.error('❌ 환경변수 SUPABASE_URL, SUPABASE_KEY 가 설정되지 않았습니다.');
+  process.exit(1);
 }
 
-const dbPath = path.join(dataDir, 'ir_opinions.json');
-const adapter = new JSONFile(dbPath);
-const db = new Low(adapter, { opinions: [], nextId: 1 });
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-// 초기화 (읽기)
-async function initDb() {
-  await db.read();
-  // 파일이 없었다면 기본값 적용
-  db.data ||= { opinions: [], nextId: 1 };
-  await db.write();
-}
-
-module.exports = { db, initDb };
+module.exports = supabase;
