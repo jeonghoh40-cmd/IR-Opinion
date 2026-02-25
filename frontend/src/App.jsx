@@ -3,6 +3,7 @@ import { api } from './api';
 import LoginScreen from './components/LoginScreen';
 import OpinionForm from './components/OpinionForm';
 import OpinionList from './components/OpinionList';
+import AllOpinionsView from './components/AllOpinionsView';
 import ChangePassword from './components/ChangePassword';
 
 export default function App() {
@@ -58,7 +59,10 @@ export default function App() {
         </div>
         <nav style={styles.nav}>
           <button onClick={() => setTab('list')} style={{ ...styles.navBtn, ...(tab === 'list' ? styles.navActive : {}) }}>
-            목록
+            내 목록
+          </button>
+          <button onClick={() => setTab('all')} style={{ ...styles.navBtn, ...(tab === 'all' ? styles.navActive : {}) }}>
+            전체 현황
           </button>
           <button onClick={() => setTab('form')} style={{ ...styles.navBtn, ...(tab === 'form' ? styles.navActive : {}) }}>
             + 의견 등록
@@ -74,8 +78,14 @@ export default function App() {
       <main style={styles.main}>
         {tab === 'form' ? (
           <OpinionForm reviewer={reviewer} onCreated={handleCreated} />
+        ) : tab === 'all' ? (
+          <AllOpinionsView opinions={opinions} loading={loading} />
         ) : (
-          <OpinionList opinions={opinions} loading={loading} onDeleted={handleDeleted} />
+          <OpinionList
+            opinions={opinions.filter((op) => op.analyst === reviewer.name)}
+            loading={loading}
+            onDeleted={handleDeleted}
+          />
         )}
       </main>
 
