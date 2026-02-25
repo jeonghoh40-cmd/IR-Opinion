@@ -1,23 +1,16 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api';
 
-const INITIAL = {
-  company_name: '',
-  opinion_type: '',
-  analyst: '',
-  content: '',
-};
+const INITIAL = { company_name: '', opinion_type: '', content: '' };
 
-export default function OpinionForm({ onCreated }) {
+export default function OpinionForm({ reviewer, onCreated }) {
   const [form, setForm] = useState(INITIAL);
   const [companies, setCompanies] = useState([]);
-  const [reviewers, setReviewers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
     api.getCompanies().then(setCompanies).catch(console.error);
-    api.getReviewers().then(setReviewers).catch(console.error);
   }, []);
 
   const handle = (e) => setForm({ ...form, [e.target.name]: e.target.value });
@@ -27,7 +20,7 @@ export default function OpinionForm({ onCreated }) {
     setError('');
     setLoading(true);
     try {
-      const created = await api.create(form);
+      const created = await api.create({ ...form, analyst: reviewer.name });
       onCreated(created);
       setForm(INITIAL);
     } catch (err) {
@@ -41,6 +34,12 @@ export default function OpinionForm({ onCreated }) {
     <form onSubmit={submit} style={styles.form}>
       <h2 style={styles.title}>IR 의견 등록</h2>
 
+      {/* 심사역 표시 (읽기 전용) */}
+      <div style={styles.reviewerBadge}>
+        <span style={styles.reviewerLabel}>심사역</span>
+        <span style={styles.reviewerName}>{reviewer.name}</span>
+      </div>
+
       {/* 회사 선택 */}
       <div style={styles.field}>
         <label style={styles.label}>회사명 *</label>
@@ -52,7 +51,7 @@ export default function OpinionForm({ onCreated }) {
         </select>
       </div>
 
-      {/* 투자의견 버튼 선택 */}
+      {/* 투자의견 버튼 */}
       <div style={styles.field}>
         <label style={styles.label}>투자의견 *</label>
         <div style={styles.radioGroup}>
@@ -83,17 +82,6 @@ export default function OpinionForm({ onCreated }) {
         </div>
       </div>
 
-      {/* 심사역 선택 */}
-      <div style={styles.field}>
-        <label style={styles.label}>심사역</label>
-        <select name="analyst" value={form.analyst} onChange={handle} style={styles.input}>
-          <option value="">-- 심사역 선택 --</option>
-          {reviewers.map((r) => (
-            <option key={r.id} value={r.name}>{r.name}</option>
-          ))}
-        </select>
-      </div>
-
       {/* 의견 내용 */}
       <div style={styles.field}>
         <label style={styles.label}>의견 내용 *</label>
@@ -119,58 +107,34 @@ export default function OpinionForm({ onCreated }) {
 
 const styles = {
   form: {
-    background: '#fff',
-    borderRadius: 12,
-    padding: '28px 32px',
-    boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
-    marginBottom: 32,
+    background: '#fff', borderRadius: 12,
+    padding: '28px 32px', boxShadow: '0 2px 12px rgba(0,0,0,0.08)', marginBottom: 32,
   },
   title: { fontSize: 20, fontWeight: 700, marginBottom: 20, color: '#1a1a2e' },
+  reviewerBadge: {
+    display: 'flex', alignItems: 'center', gap: 10,
+    background: '#f0f4ff', borderRadius: 8, padding: '10px 16px', marginBottom: 20,
+  },
+  reviewerLabel: { fontSize: 12, fontWeight: 600, color: '#2c3e9e' },
+  reviewerName: { fontSize: 15, fontWeight: 700, color: '#1a1a2e' },
   field: { display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 18 },
   label: { fontSize: 13, fontWeight: 600, color: '#555' },
   input: {
-    padding: '10px 12px',
-    border: '1.5px solid #dde1e7',
-    borderRadius: 8,
-    fontSize: 14,
-    outline: 'none',
-    fontFamily: 'inherit',
-    background: '#fff',
+    padding: '10px 12px', border: '1.5px solid #dde1e7',
+    borderRadius: 8, fontSize: 14, fontFamily: 'inherit', background: '#fff', outline: 'none',
   },
   radioGroup: { display: 'flex', gap: 12 },
   radioLabel: {
-    flex: 1,
-    textAlign: 'center',
-    padding: '12px',
-    border: '1.5px solid #dde1e7',
-    borderRadius: 8,
-    fontSize: 14,
-    fontWeight: 600,
-    cursor: 'pointer',
-    color: '#aaa',
-    transition: 'all .2s',
+    flex: 1, textAlign: 'center', padding: '12px',
+    border: '1.5px solid #dde1e7', borderRadius: 8,
+    fontSize: 14, fontWeight: 600, cursor: 'pointer', color: '#aaa',
   },
-  radioActivePos: {
-    background: '#fff0f0',
-    borderColor: '#c0392b',
-    color: '#c0392b',
-  },
-  radioActiveNeg: {
-    background: '#f0f4ff',
-    borderColor: '#2980b9',
-    color: '#2980b9',
-  },
+  radioActivePos: { background: '#fff0f0', borderColor: '#c0392b', color: '#c0392b' },
+  radioActiveNeg: { background: '#f0f4ff', borderColor: '#2980b9', color: '#2980b9' },
   btn: {
-    width: '100%',
-    padding: '13px',
-    background: '#1a1a2e',
-    color: '#fff',
-    border: 'none',
-    borderRadius: 8,
-    fontSize: 15,
-    fontWeight: 700,
-    cursor: 'pointer',
-    marginTop: 4,
+    width: '100%', padding: '13px', background: '#1a1a2e',
+    color: '#fff', border: 'none', borderRadius: 8,
+    fontSize: 15, fontWeight: 700, cursor: 'pointer', marginTop: 4,
   },
   error: { color: '#c0392b', fontSize: 13, marginBottom: 8 },
 };

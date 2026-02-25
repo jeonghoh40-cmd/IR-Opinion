@@ -28,6 +28,7 @@ app.use(express.json());
 app.get('/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
 
 // API 라우트
+app.use('/api/auth', require('./routes/auth'));
 app.use('/api/opinions', require('./routes/opinions'));
 app.use('/api/companies', require('./routes/companies'));
 app.use('/api/reviewers', require('./routes/reviewers'));

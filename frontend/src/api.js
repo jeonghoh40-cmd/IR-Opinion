@@ -20,4 +20,6 @@ export const api = {
   remove: (id) => request(`/opinions/${id}`, { method: 'DELETE' }),
   getCompanies: () => request('/companies'),
   getReviewers: () => request('/reviewers'),
+  login: (body) => request('/auth/login', { method: 'POST', body: JSON.stringify(body) }),
+  changePassword: (body) => request('/auth/change-password', { method: 'POST', body: JSON.stringify(body) }),
 };
