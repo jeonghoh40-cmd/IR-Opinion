@@ -18,6 +18,7 @@ export default function LoginScreen({ onLogin }) {
     setLoading(true);
     try {
       const reviewer = await api.login({ reviewer_id: Number(reviewerId), password });
+      setPassword('');
       onLogin(reviewer);
     } catch (err) {
       setError(err.message);
